@@ -2,7 +2,7 @@
   "name": "tububot",
   "version": "0.0.0",
   "private": true,
-  "author": "fuwamaki <yusaku.maki@street-academy.com>",
+  "author": "fuwamaki",
   "description": "A simple helpful robot for your Company",
   "dependencies": {
     "hubot": "^3.3.2",
