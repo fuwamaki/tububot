@@ -16,3 +16,9 @@ module.exports = (robot) ->
         cronjob.start()
         msg.send "cronスタートするよ"
         return
+    
+    robot.hear /cronbot stop/i, (msg) ->
+        cronjob.stop()
+        msg.send "cronストップしたよ"
+        return
+    
