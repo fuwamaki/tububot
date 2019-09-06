@@ -10,7 +10,6 @@ module.exports = (robot) ->
     cronjob = new cronJob('00 42 * * * *', () ->
         send '#_fuwamaki', "cron test"
     )
-    cronjob.start()
 
     robot.hear /cronbot start/i, (msg) ->
         cronjob.start()
