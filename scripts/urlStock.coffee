@@ -94,7 +94,7 @@ module.exports = (robot) ->
 # - url stockにコメントを付けれる(update)
 # - url stockにカテゴリを付けれる(update)
 # - url stock情報を更新できる(update)
-# - カテゴリ一覧を見れる(get)
+# - [x] カテゴリ一覧を見れる(get)
 # - 特定のurl情報を見れる(get)
 # - 特定のカテゴリのurl一覧を見れる(get)
 # - 全url一覧を見れる(get)
