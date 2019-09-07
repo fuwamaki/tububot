@@ -30,10 +30,8 @@ module.exports = (robot) ->
 
     # 特定IDのストックURLを削除
     delete_stock_url = (id) ->
-        # TODO stockUrls消す
-        stockUrls = stock_urls()
         for key, value of stock_urls() when "#{value['id']}" is id
-            stockUrls.splice(key, 1)
+            stock_urls().splice(key, 1)
             return true
         return false
 
@@ -141,8 +139,8 @@ module.exports = (robot) ->
         msg.send "stock urlsを全リセットしたよー"
 
 # - [x] urlをstockしてくれる(set)
-# - urlをコメント付きでstockしてくれる(set)
-# - urlをカテゴリ付きでstockしてくれる(set)
+# - [x] urlをコメント付きでstockしてくれる(set)
+# - [x] urlをカテゴリ付きでstockしてくれる(set)
 # - [x] urlをコメント・カテゴリ付きでstockしてくれる(set)
 # - url stockにコメントを付けれる(update)
 # - url stockにカテゴリを付けれる(update)
