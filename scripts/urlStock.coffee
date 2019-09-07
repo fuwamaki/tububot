@@ -25,6 +25,7 @@ module.exports = (robot) ->
             if arg.indexOf("http") is 0
                 stockUrl['url'] = arg
                 break
+        # TODO: URL入ってなかったらここでreturn
         for arg in args
             # カテゴリを吸い上げる
             if arg.indexOf("c_") is 0
@@ -35,6 +36,18 @@ module.exports = (robot) ->
             if arg.indexOf("http") isnt 0 and arg.indexOf("c_") isnt 0
                 stockUrl['comment'] = arg
                 break
-        msg.send "登録URLや #{stockUrl['url']}"
-        msg.send "登録カテゴリや #{stockUrl['category']}"
-        msg.send "登録コメントや #{stockUrl['comment']}"
+        nextStockNumber = robot.brain.get(NEXT_STOCK_NUBMER) || 0
+        stockUrl['id'] = nextStockNumber
+        robot.brain.set(NEXT_STOCK_NUBMER, nextStockNumber + 1)
+        stockUrls = robot.brain.get(STOCK_URLS) || []
+        stockUrls.push(stockUrl)
+        robot.brain.set(STOCK_URLS, stockUrls)
+        for aaa in stockUrls
+            msg.send "登録URLや #{aaa['url']}"
+            msg.send "登録カテゴリや #{aaa['category']}"
+            msg.send "登録コメントや #{aaa['comment']}"
+
+    # stock_urlsを全部リセットする
+    robot.hear /stockbot all reset/i, (msg) ->
+        robot.brain.set(STOCK_URLS, null)
+        msg.send "stock urlsを全リセットしたよー"
