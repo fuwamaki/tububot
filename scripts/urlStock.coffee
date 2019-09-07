@@ -71,10 +71,8 @@ module.exports = (robot) ->
     robot.hear /stockbot fetch url (.*)$/i, (msg) ->
         args = msg.match[1].split(/\s+/)
         stockUrl = stock_url args[0]
-        if stockUrl?
-            msg.send "#{stockUrl['id']}: #{stockUrl['url']} category:#{stockUrl['category']} comment: #{stockUrl['comment']}"
-        else
-            msg.send "#{args[0]}のURLはないよー"
+        if stockUrl? then msg.send "#{stockUrl['id']}: #{stockUrl['url']} category:#{stockUrl['category']} comment: #{stockUrl['comment']}"
+        else msg.send "#{args[0]}のURLはないよー"
 
     # MARK: SET
 
@@ -136,6 +134,6 @@ module.exports = (robot) ->
 # - [x] 特定のurl情報を見れる(get)
 # - [x] 特定のカテゴリのurl一覧を見れる(get)
 # - [x] 全url一覧を見れる(get)
-# - 特定のurl stockを削除(delete)
+# - [x] 特定のurl stockを削除(delete)
 # - 特定のカテゴリのurlを削除(delete)
 # - 全url stockを削除(delete) 確認必須
