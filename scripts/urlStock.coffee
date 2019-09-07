@@ -17,10 +17,22 @@ module.exports = (robot) ->
     #         msg.send ":stgbot: > #{name} は #{env} をそもそも使ってないよ？"
 
     # MARK: GET
-    robot.hear /stockbot all get/i, (msg) ->
+
+    robot.hear /stockbot fetch all urls/i, (msg) ->
         stockUrls = robot.brain.get(STOCK_URLS)
         for stockUrl in stockUrls
             msg.send "#{stockUrl['id']}: #{stockUrl['url']} category:#{stockUrl['category']} comment: #{stockUrl['comment']}"
+
+    # fetch カテゴリ一覧
+    robot.hear /stockbot fetch categories/i, (msg) ->
+        stockUrls = robot.brain.get(STOCK_URLS)
+        categories = []
+        for stockUrl in stockUrls
+            if stockUrl['category']?
+                if stockUrl['category'] in categories
+                else categories.push(stockUrl['category'])
+        if categories is [] then "カテゴリがないよー"
+        else msg.send "カテゴリ一覧だよー: #{categories}"
 
     # MARK: SET
 
