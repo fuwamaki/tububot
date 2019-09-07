@@ -22,6 +22,11 @@ module.exports = (robot) ->
         for stockUrl in stock_urls() when stockUrl['category'] is category
                     msg.send "#{stockUrl['id']}: #{stockUrl['url']} comment: #{stockUrl['comment']}"
 
+    # 特定IDのストックURL
+    stock_url = (id) ->
+        for stockUrl in stock_urls() when "#{stockUrl['id']}" is id
+            return stockUrl
+
     # MARK: GET
 
     # fetch ストックURL一覧
@@ -51,6 +56,12 @@ module.exports = (robot) ->
         if args[0].indexOf("c_") is 0
             msg.send "#{args[0]}:"
             urls_per_category msg, args[0]
+
+    # fetch 特定IDのurl情報
+    robot.hear /stockbot fetch url (.*)$/i, (msg) ->
+        args = msg.match[1].split(/\s+/)
+        stockUrl = stock_url args[0]
+        msg.send "#{stockUrl['id']}: #{stockUrl['url']} category:#{stockUrl['category']} comment: #{stockUrl['comment']}"
 
     # MARK: SET
 
@@ -103,7 +114,7 @@ module.exports = (robot) ->
 # - url stock情報を更新できる(update)
 # - [x] カテゴリ一覧を見れる(get)
 # - 特定のurl情報を見れる(get)
-# - 特定のカテゴリのurl一覧を見れる(get)
+# - [x] 特定のカテゴリのurl一覧を見れる(get)
 # - 全url一覧を見れる(get)
 # - 特定のurl stockを削除(delete)
 # - 特定のカテゴリのurlを削除(delete)
