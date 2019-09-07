@@ -30,10 +30,18 @@ module.exports = (robot) ->
 
     # 特定IDのストックURLを削除
     delete_stock_url = (id) ->
+        # TODO stockUrls消す
         stockUrls = stock_urls()
         for key, value of stock_urls() when "#{value['id']}" is id
             stockUrls.splice(key, 1)
-            robot.brain.set(STOCK_URLS, stockUrls)
+            return true
+        return false
+
+    # 特定カテゴリのストックURLを削除
+    delete_category = (category) ->
+        # 注意: stock_urls().splice をするとstock_urls()の値が変わるので勝手にfor文をbreakしてしまう
+        for key, value of stock_urls() when "#{value['category']}" is category
+            stock_urls().splice(key, 1)
             return true
         return false
 
@@ -118,6 +126,15 @@ module.exports = (robot) ->
         if result is true then msg.send "ID #{args[0]} を削除したよー"
         else msg.send "ID #{args[0]} は存在しないみたいだよー"
 
+    # 特定カテゴリのストックURLを削除
+    robot.hear /stockbot category delete (.*)$/i, (msg) ->
+        args = msg.match[1].split(/\s+/)
+        count = 0
+        while delete_category args[0]
+            count += 1
+        if count > 0 then msg.send "カテゴリ #{args[0]} を #{count}個 削除したよー"
+        else msg.send "カテゴリ #{args[0]} は存在しないみたいだよー"
+
     # stock_urlsを全部リセットする
     robot.hear /stockbot all reset/i, (msg) ->
         robot.brain.set(STOCK_URLS, null)
@@ -135,5 +152,5 @@ module.exports = (robot) ->
 # - [x] 特定のカテゴリのurl一覧を見れる(get)
 # - [x] 全url一覧を見れる(get)
 # - [x] 特定のurl stockを削除(delete)
-# - 特定のカテゴリのurlを削除(delete)
+# - [x] 特定のカテゴリのurlを削除(delete)
 # - 全url stockを削除(delete) 確認必須
