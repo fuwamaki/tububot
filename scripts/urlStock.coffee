@@ -25,7 +25,10 @@ module.exports = (robot) ->
             if arg.indexOf("http") is 0
                 stockUrl['url'] = arg
                 break
-        # TODO: URL入ってなかったらここでreturn
+        # urlが含まれてなければreturnする
+        if not stockUrl['url']?
+            msg.send "stockするurlが入ってないよー"
+            return
         for arg in args
             # カテゴリを吸い上げる
             if arg.indexOf("c_") is 0
