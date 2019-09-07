@@ -8,16 +8,14 @@ module.exports = (robot) ->
     stock_urls = ->
         robot.brain.get(STOCK_URLS) || []
 
-    # カテゴリ一覧取得
-    # fetch_categories = ->
-
-    # goFree = (msg, env, name) ->
-    #     usingUser = robot.brain.get(env)
-    #     if name is usingUser
-    #         robot.brain.set(env, null)
-    #         msg.send ":stgbot: > #{env} を解放したよー"
-    #     else
-    #         msg.send ":stgbot: > #{name} は #{env} をそもそも使ってないよ？"
+    # カテゴリ一覧
+    categories = ->
+        categories = []
+        for stockUrl in stock_urls()
+            if stockUrl['category']?
+                if stockUrl['category'] in categories
+                else categories.push(stockUrl['category'])
+        return categories
 
     # MARK: GET
 
@@ -28,13 +26,9 @@ module.exports = (robot) ->
 
     # fetch カテゴリ一覧
     robot.hear /stockbot fetch categories/i, (msg) ->
-        categories = []
-        for stockUrl in stock_urls()
-            if stockUrl['category']?
-                if stockUrl['category'] in categories
-                else categories.push(stockUrl['category'])
-        if categories is [] then "カテゴリがないよー"
-        else msg.send "カテゴリ一覧だよー: #{categories}"
+        result = categories()
+        if result is [] then "カテゴリがないよー"
+        else msg.send "カテゴリ一覧だよー: #{result}"
 
     # MARK: SET
 
