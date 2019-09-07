@@ -1,13 +1,16 @@
 # STG利用状況
 module.exports = (robot) ->
     # MARK: static variables
-    SAMPLE_URL = 'sample'
-    SAMPLE_COMMENT = 'sample_comment'
-    SAMPLE_CATEGORY = 'sample_category'
     STOCK_URLS = 'stock_urls'
     NEXT_STOCK_NUBMER = 'next_stock_number'
 
-    # 返すロジック
+    # ストックURL一覧
+    stock_urls = ->
+        robot.brain.get(STOCK_URLS) || []
+
+    # カテゴリ一覧取得
+    # fetch_categories = ->
+
     # goFree = (msg, env, name) ->
     #     usingUser = robot.brain.get(env)
     #     if name is usingUser
@@ -18,16 +21,15 @@ module.exports = (robot) ->
 
     # MARK: GET
 
+    # fetch 全ストックURL一覧
     robot.hear /stockbot fetch all urls/i, (msg) ->
-        stockUrls = robot.brain.get(STOCK_URLS)
-        for stockUrl in stockUrls
+        for stockUrl in stock_urls()
             msg.send "#{stockUrl['id']}: #{stockUrl['url']} category:#{stockUrl['category']} comment: #{stockUrl['comment']}"
 
     # fetch カテゴリ一覧
     robot.hear /stockbot fetch categories/i, (msg) ->
-        stockUrls = robot.brain.get(STOCK_URLS)
         categories = []
-        for stockUrl in stockUrls
+        for stockUrl in stock_urls()
             if stockUrl['category']?
                 if stockUrl['category'] in categories
                 else categories.push(stockUrl['category'])
@@ -64,7 +66,7 @@ module.exports = (robot) ->
         urlInfo['id'] = nextStockNumber
         robot.brain.set(NEXT_STOCK_NUBMER, nextStockNumber + 1)
         # stockUrlsにurlInfoをset
-        stockUrls = robot.brain.get(STOCK_URLS) || []
+        stockUrls = stock_urls()
         stockUrls.push(urlInfo)
         robot.brain.set(STOCK_URLS, stockUrls)
         msg.send "登録したよー #{urlInfo['id']}: #{urlInfo['url']} category:#{urlInfo['category']} comment: #{urlInfo['comment']}"            
