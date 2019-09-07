@@ -36,7 +36,7 @@ module.exports = (robot) ->
         else msg.send "カテゴリ一覧だよー: #{result}"
 
     # fetch カテゴリごとのストックURL一覧
-    robot.hear /stockbot fetch c_urls/i, (msg) ->
+    robot.hear /stockbot fetch urls per categories/i, (msg) ->
         for category in categories()
             msg.send "#{category}:"
             urls_per_category msg, category
@@ -44,6 +44,13 @@ module.exports = (robot) ->
         msg.send "カテゴリなし:"
         for stockUrl in stock_urls() when not stockUrl['category']?
             msg.send "#{stockUrl['id']}: #{stockUrl['url']} comment: #{stockUrl['comment']}"
+
+    # fetch 特定のカテゴリのストックURL一覧
+    robot.hear /stockbot fetch urls (.*)$/i, (msg) ->
+        args = msg.match[1].split(/\s+/)
+        if args[0].indexOf("c_") is 0
+            msg.send "#{args[0]}:"
+            urls_per_category msg, args[0]
 
     # MARK: SET
 
