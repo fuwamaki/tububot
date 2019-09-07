@@ -1,8 +1,10 @@
 # STG利用状況
 module.exports = (robot) ->
     # MARK: static variables
-    SAMPLE = 'sample'
-    STOCK_URLS = 'urls'
+    SAMPLE_URL = 'sample'
+    SAMPLE_COMMENT = 'sample_comment'
+    SAMPLE_CATEGORY = 'sample_category'
+    STOCK_URLS = 'stock_urls'
     NEXT_STOCK_NUBMER = 'next_stock_number'
 
     # 返すロジック
@@ -16,6 +18,23 @@ module.exports = (robot) ->
 
     # urlをstockする
     robot.hear /stock (.*)$/i, (msg) ->
-        url = msg.match[1].split(/\s+/)
-        robot.brain.set(SAMPLE, url)
-        msg.send "登録や #{url}"
+        args = msg.match[1].split(/\s+/)
+        stockUrl = {}
+        for arg in args
+            # url文字列だったら最初のものを保存
+            if arg.indexOf("http") is 0
+                stockUrl['url'] = arg
+                break
+        for arg in args
+            # カテゴリを吸い上げる
+            if arg.indexOf("c_") is 0
+                stockUrl['category'] = arg
+                break
+        for arg in args
+            # コメントを吸い上げる
+            if arg.indexOf("http") isnt 0 and arg.indexOf("c_") isnt 0
+                stockUrl['comment'] = arg
+                break
+        msg.send "登録URLや #{stockUrl['url']}"
+        msg.send "登録カテゴリや #{stockUrl['category']}"
+        msg.send "登録コメントや #{stockUrl['comment']}"
