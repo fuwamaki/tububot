@@ -26,6 +26,16 @@ module.exports = (robot) ->
     stock_url = (id) ->
         for stockUrl in stock_urls() when "#{stockUrl['id']}" is id
             return stockUrl
+        return null
+
+    # 特定IDのストックURLを削除
+    delete_stock_url = (id) ->
+        stockUrls = stock_urls()
+        for key, value of stock_urls() when "#{value['id']}" is id
+            stockUrls.splice(key, 1)
+            robot.brain.set(STOCK_URLS, stockUrls)
+            return true
+        return false
 
     # MARK: GET
 
@@ -61,7 +71,10 @@ module.exports = (robot) ->
     robot.hear /stockbot fetch url (.*)$/i, (msg) ->
         args = msg.match[1].split(/\s+/)
         stockUrl = stock_url args[0]
-        msg.send "#{stockUrl['id']}: #{stockUrl['url']} category:#{stockUrl['category']} comment: #{stockUrl['comment']}"
+        if stockUrl?
+            msg.send "#{stockUrl['id']}: #{stockUrl['url']} category:#{stockUrl['category']} comment: #{stockUrl['comment']}"
+        else
+            msg.send "#{args[0]}のURLはないよー"
 
     # MARK: SET
 
@@ -100,6 +113,13 @@ module.exports = (robot) ->
 
     # MARK: DELETE
 
+    # 特定IDのストックURLを削除
+    robot.hear /stockbot delete (.*)$/i, (msg) ->
+        args = msg.match[1].split(/\s+/)
+        result = delete_stock_url args[0]
+        if result is true then msg.send "ID #{args[0]} を削除したよー"
+        else msg.send "ID #{args[0]} は存在しないみたいだよー"
+
     # stock_urlsを全部リセットする
     robot.hear /stockbot all reset/i, (msg) ->
         robot.brain.set(STOCK_URLS, null)
@@ -113,9 +133,9 @@ module.exports = (robot) ->
 # - url stockにカテゴリを付けれる(update)
 # - url stock情報を更新できる(update)
 # - [x] カテゴリ一覧を見れる(get)
-# - 特定のurl情報を見れる(get)
+# - [x] 特定のurl情報を見れる(get)
 # - [x] 特定のカテゴリのurl一覧を見れる(get)
-# - 全url一覧を見れる(get)
+# - [x] 全url一覧を見れる(get)
 # - 特定のurl stockを削除(delete)
 # - 特定のカテゴリのurlを削除(delete)
 # - 全url stockを削除(delete) 確認必須
