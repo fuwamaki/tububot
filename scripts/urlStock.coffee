@@ -16,41 +16,65 @@ module.exports = (robot) ->
     #     else
     #         msg.send ":stgbot: > #{name} は #{env} をそもそも使ってないよ？"
 
+    # MARK: GET
+    robot.hear /stockbot all get/i, (msg) ->
+        stockUrls = robot.brain.get(STOCK_URLS)
+        for stockUrl in stockUrls
+            msg.send "#{stockUrl['id']}: #{stockUrl['url']} category:#{stockUrl['category']} comment: #{stockUrl['comment']}"
+
+    # MARK: SET
+
     # urlをstockする
     robot.hear /stock (.*)$/i, (msg) ->
         args = msg.match[1].split(/\s+/)
-        stockUrl = {}
+        urlInfo = {}
         for arg in args
             # url文字列だったら最初のものを保存
             if arg.indexOf("http") is 0
-                stockUrl['url'] = arg
+                urlInfo['url'] = arg
                 break
         # urlが含まれてなければreturnする
-        if not stockUrl['url']?
+        if not urlInfo['url']?
             msg.send "stockするurlが入ってないよー"
             return
         for arg in args
             # カテゴリを吸い上げる
             if arg.indexOf("c_") is 0
-                stockUrl['category'] = arg
+                urlInfo['category'] = arg
                 break
         for arg in args
             # コメントを吸い上げる
             if arg.indexOf("http") isnt 0 and arg.indexOf("c_") isnt 0
-                stockUrl['comment'] = arg
+                urlInfo['comment'] = arg
                 break
+        # idをset
         nextStockNumber = robot.brain.get(NEXT_STOCK_NUBMER) || 0
-        stockUrl['id'] = nextStockNumber
+        urlInfo['id'] = nextStockNumber
         robot.brain.set(NEXT_STOCK_NUBMER, nextStockNumber + 1)
+        # stockUrlsにurlInfoをset
         stockUrls = robot.brain.get(STOCK_URLS) || []
-        stockUrls.push(stockUrl)
+        stockUrls.push(urlInfo)
         robot.brain.set(STOCK_URLS, stockUrls)
-        for aaa in stockUrls
-            msg.send "登録URLや #{aaa['url']}"
-            msg.send "登録カテゴリや #{aaa['category']}"
-            msg.send "登録コメントや #{aaa['comment']}"
+        msg.send "登録したよー #{urlInfo['id']}: #{urlInfo['url']} category:#{urlInfo['category']} comment: #{urlInfo['comment']}"            
+
+    # MARK: DELETE
 
     # stock_urlsを全部リセットする
     robot.hear /stockbot all reset/i, (msg) ->
         robot.brain.set(STOCK_URLS, null)
         msg.send "stock urlsを全リセットしたよー"
+
+# - [x] urlをstockしてくれる(set)
+# - urlをコメント付きでstockしてくれる(set)
+# - urlをカテゴリ付きでstockしてくれる(set)
+# - [x] urlをコメント・カテゴリ付きでstockしてくれる(set)
+# - url stockにコメントを付けれる(update)
+# - url stockにカテゴリを付けれる(update)
+# - url stock情報を更新できる(update)
+# - カテゴリ一覧を見れる(get)
+# - 特定のurl情報を見れる(get)
+# - 特定のカテゴリのurl一覧を見れる(get)
+# - 全url一覧を見れる(get)
+# - 特定のurl stockを削除(delete)
+# - 特定のカテゴリのurlを削除(delete)
+# - 全url stockを削除(delete) 確認必須
