@@ -10,16 +10,21 @@ module.exports = (robot) ->
 
     # カテゴリ一覧
     categories = ->
-        categories = []
+        array = []
         for stockUrl in stock_urls()
             if stockUrl['category']?
-                if stockUrl['category'] in categories
-                else categories.push(stockUrl['category'])
-        return categories
+                if stockUrl['category'] in array
+                else array.push(stockUrl['category'])
+        return array
+
+    # カテゴリごとのストックURL一覧
+    urls_per_category = (msg, category) ->
+        for stockUrl in stock_urls() when stockUrl['category'] is category
+                    msg.send "#{stockUrl['id']}: #{stockUrl['url']} comment: #{stockUrl['comment']}"
 
     # MARK: GET
 
-    # fetch 全ストックURL一覧
+    # fetch ストックURL一覧
     robot.hear /stockbot fetch all urls/i, (msg) ->
         for stockUrl in stock_urls()
             msg.send "#{stockUrl['id']}: #{stockUrl['url']} category:#{stockUrl['category']} comment: #{stockUrl['comment']}"
@@ -29,6 +34,16 @@ module.exports = (robot) ->
         result = categories()
         if result is [] then "カテゴリがないよー"
         else msg.send "カテゴリ一覧だよー: #{result}"
+
+    # fetch カテゴリごとのストックURL一覧
+    robot.hear /stockbot fetch c_urls/i, (msg) ->
+        for category in categories()
+            msg.send "#{category}:"
+            urls_per_category msg, category
+        # カテゴリなしのストックURL一覧
+        msg.send "カテゴリなし:"
+        for stockUrl in stock_urls() when not stockUrl['category']?
+            msg.send "#{stockUrl['id']}: #{stockUrl['url']} comment: #{stockUrl['comment']}"
 
     # MARK: SET
 
