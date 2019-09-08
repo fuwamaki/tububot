@@ -45,6 +45,10 @@ module.exports = (robot) ->
 
     # MARK: GET
 
+    # Hello World!!
+    robot.hear /stockbot hello/i, (msg) ->
+        msg.send "Hello \nWorld!!"
+
     # fetch ストックURL一覧
     robot.hear /stockbot fetch all urls/i, (msg) ->
         for stockUrl in stock_urls()
