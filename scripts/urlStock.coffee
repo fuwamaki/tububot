@@ -67,7 +67,7 @@ module.exports = (robot) ->
             msg.send "#{stockUrl['id']}: #{stockUrl['url']} comment: #{stockUrl['comment']}"
 
     # fetch 特定のカテゴリのストックURL一覧
-    robot.hear /stockbot fetch urls (.*)$/i, (msg) ->
+    robot.hear /stockbot fetch category urls (.*)$/i, (msg) ->
         args = msg.match[1].split(/\s+/)
         if args[0].indexOf("c_") is 0
             msg.send "#{args[0]}:"
@@ -182,17 +182,19 @@ module.exports = (robot) ->
         robot.brain.set(STOCK_URLS, null)
         msg.send "stock urlsを全リセットしたよー"
 
-# - [x] urlをstockしてくれる(set)
-# - [x] urlをコメント付きでstockしてくれる(set)
-# - [x] urlをカテゴリ付きでstockしてくれる(set)
-# - [x] urlをコメント・カテゴリ付きでstockしてくれる(set)
-# - [x] url stockにコメントを付けれる(update)
-# - [x] url stockにカテゴリを付けれる(update)
-# - [x] url stock情報を更新できる(update)
-# - [x] カテゴリ一覧を見れる(get)
-# - [x] 特定のurl情報を見れる(get)
-# - [x] 特定のカテゴリのurl一覧を見れる(get)
-# - [x] 全url一覧を見れる(get)
-# - [x] 特定のurl stockを削除(delete)
-# - [x] 特定のカテゴリのurlを削除(delete)
-# - [x] 全url stockを削除(delete)
+    # help
+    robot.hear /stockbot help/i, (msg) ->
+        msg.send "stock URL値: URLをストックする"
+        msg.send "stock URL値 カテゴリ名(c_なんとか): URLをストックする"
+        msg.send "stock URL値 コメント: URLをコメント付きでストックする"
+        msg.send "stockbot fetch all urls: 全ストックURLを教えてくれる"
+        msg.send "stockbot fetch urls per categories: カテゴリごとで全ストックURLを教えてくれる"
+        msg.send "stockbot fetch categories: 全カテゴリを教えてくれる"
+        msg.send "stockbot fetch category urls カテゴリ名(c_なんとか): 特定カテゴリのストックURLを教えてくれる"
+        msg.send "stockbot fetch url ID値: 特定IDのストックURLを教えてくれる"
+        msg.send "stockbot update url ID値 URL値: 特定IDのURLを更新する"
+        msg.send "stockbot update category ID値 カテゴリ値: 特定IDのカテゴリを更新する"
+        msg.send "stockbot update comment ID値 コメント: 特定IDのコメントを更新する"
+        msg.send "stockbot delete ID値: 特定IDのストックURLを削除する"
+        msg.send "stockbot category delete ID値: 特定カテゴリのストックURLを全て削除する"
+        msg.send "stockbot urls all reset: ストックURLを全て削除する"
