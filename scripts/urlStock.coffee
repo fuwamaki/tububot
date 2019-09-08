@@ -38,7 +38,13 @@ module.exports = (robot) ->
     # カテゴリごとのストックURL一覧
     urls_per_category = (msg, category) ->
         for stockUrl in stock_urls() when stockUrl['category'] is category
-            msg.send "#{stockUrl['id']}: #{stockUrl['url']} comment: #{stockUrl['comment']}"
+            list_message "#{stockUrl['id']}: #{stockUrl['url']} comment: #{stockUrl['comment']}"
+
+    # カテゴリなしがあるかどうか
+    is_stock_url_of_undefined_category = ->
+        for stockUrl in stock_urls() when not stockUrl['category']?
+            return true
+        return false
 
     # 特定IDのストックURL
     stock_url = (id) ->
@@ -82,12 +88,17 @@ module.exports = (robot) ->
     # fetch カテゴリごとのストックURL一覧
     robot.hear /stockbot fetch urls per categories/i, (msg) ->
         for category in categories()
-            msg.send "#{category}:"
+            list_message "#{category}:"
             urls_per_category msg, category
+        # カテゴリなしがあるかどうか
+        if is_stock_url_of_undefined_category() is false
+            send_messages msg
+            return
         # カテゴリなしのストックURL一覧
-        msg.send "カテゴリなし:"
+        list_message "カテゴリなし:"
         for stockUrl in stock_urls() when not stockUrl['category']?
-            msg.send "#{stockUrl['id']}: #{stockUrl['url']} comment: #{stockUrl['comment']}"
+            list_message "#{stockUrl['id']}: #{stockUrl['url']} comment: #{stockUrl['comment']}"
+        send_messages msg
 
     # fetch 特定のカテゴリのストックURL一覧
     robot.hear /stockbot fetch category urls (.*)$/i, (msg) ->
