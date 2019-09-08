@@ -3,10 +3,28 @@ module.exports = (robot) ->
     # MARK: static variables
     STOCK_URLS = 'stock_urls'
     NEXT_STOCK_NUBMER = 'next_stock_number'
+    MESSAGES = 'messages'
 
     # ストックURL一覧
     stock_urls = ->
         robot.brain.get(STOCK_URLS) || []
+
+    # TODO: ストックURLのID AutoIncrement
+
+    # TODO: messages
+
+    # messageをmessagesにためる
+    list_message = (message) ->
+        messages = robot.brain.get(MESSAGES) || ""
+        if messages is "" then messages += message
+        else messages += "\n" + message
+        robot.brain.set(MESSAGES, messages)
+
+    # messagesの送信
+    send_messages = (msg) ->
+        messages = robot.brain.get(MESSAGES) || ""
+        msg.send messages
+        robot.brain.set(MESSAGES, "")
 
     # カテゴリ一覧
     categories = ->
@@ -20,7 +38,7 @@ module.exports = (robot) ->
     # カテゴリごとのストックURL一覧
     urls_per_category = (msg, category) ->
         for stockUrl in stock_urls() when stockUrl['category'] is category
-                    msg.send "#{stockUrl['id']}: #{stockUrl['url']} comment: #{stockUrl['comment']}"
+            msg.send "#{stockUrl['id']}: #{stockUrl['url']} comment: #{stockUrl['comment']}"
 
     # 特定IDのストックURL
     stock_url = (id) ->
@@ -52,7 +70,8 @@ module.exports = (robot) ->
     # fetch ストックURL一覧
     robot.hear /stockbot fetch all urls/i, (msg) ->
         for stockUrl in stock_urls()
-            msg.send "#{stockUrl['id']}: #{stockUrl['url']} category:#{stockUrl['category']} comment: #{stockUrl['comment']}"
+            list_message "#{stockUrl['id']}: #{stockUrl['url']} category:#{stockUrl['category']} comment: #{stockUrl['comment']}"
+        send_messages msg
 
     # fetch カテゴリ一覧
     robot.hear /stockbot fetch categories/i, (msg) ->
