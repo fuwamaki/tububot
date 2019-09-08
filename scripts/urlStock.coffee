@@ -113,7 +113,51 @@ module.exports = (robot) ->
         stockUrls = stock_urls()
         stockUrls.push(urlInfo)
         robot.brain.set(STOCK_URLS, stockUrls)
-        msg.send "登録したよー #{urlInfo['id']}: #{urlInfo['url']} category:#{urlInfo['category']} comment: #{urlInfo['comment']}"            
+        msg.send "登録したよー #{urlInfo['id']}: #{urlInfo['url']} category:#{urlInfo['category']} comment: #{urlInfo['comment']}"
+
+    # MARK: UPDATE
+
+    # 特定IDのurl更新
+    robot.hear /stockbot update url (.*)$/i, (msg) ->
+        args = msg.match[1].split(/\s+/)
+        for key, value of stock_urls() when "#{value['id']}" is args[0]
+            msg.send "before - #{value['id']}: #{value['url']} category:#{value['category']} comment: #{value['comment']}"
+            newStockUrl = {}
+            newStockUrl['id'] = value['id']
+            newStockUrl['url'] = args[1]
+            newStockUrl['category'] = value['category']
+            newStockUrl['comment'] = value['comment']
+            msg.send "after - #{newStockUrl['id']}: #{newStockUrl['url']} category:#{newStockUrl['category']} comment: #{newStockUrl['comment']}"
+            msg.send "更新したよー"
+            stock_urls().splice(key, 1, newStockUrl)
+
+    # 特定IDのcategory更新
+    robot.hear /stockbot update category (.*)$/i, (msg) ->
+        args = msg.match[1].split(/\s+/)
+        for key, value of stock_urls() when "#{value['id']}" is args[0]
+            msg.send "before - #{value['id']}: #{value['url']} category:#{value['category']} comment: #{value['comment']}"
+            newStockUrl = {}
+            newStockUrl['id'] = value['id']
+            newStockUrl['url'] = value['url']
+            newStockUrl['category'] = args[1]
+            newStockUrl['comment'] = value['comment']
+            msg.send "after - #{newStockUrl['id']}: #{newStockUrl['url']} category:#{newStockUrl['category']} comment: #{newStockUrl['comment']}"
+            msg.send "更新したよー"
+            stock_urls().splice(key, 1, newStockUrl)
+
+    # 特定IDのcomment更新
+    robot.hear /stockbot update comment (.*)$/i, (msg) ->
+        args = msg.match[1].split(/\s+/)
+        for key, value of stock_urls() when "#{value['id']}" is args[0]
+            msg.send "before - #{value['id']}: #{value['url']} category:#{value['category']} comment: #{value['comment']}"
+            newStockUrl = {}
+            newStockUrl['id'] = value['id']
+            newStockUrl['url'] = value['url']
+            newStockUrl['category'] = value['category']
+            newStockUrl['comment'] = args[1]
+            msg.send "after - #{newStockUrl['id']}: #{newStockUrl['url']} category:#{newStockUrl['category']} comment: #{newStockUrl['comment']}"
+            msg.send "更新したよー"
+            stock_urls().splice(key, 1, newStockUrl)
 
     # MARK: DELETE
 
@@ -134,7 +178,7 @@ module.exports = (robot) ->
         else msg.send "カテゴリ #{args[0]} は存在しないみたいだよー"
 
     # stock_urlsを全部リセットする
-    robot.hear /stockbot all reset/i, (msg) ->
+    robot.hear /stockbot urls all reset/i, (msg) ->
         robot.brain.set(STOCK_URLS, null)
         msg.send "stock urlsを全リセットしたよー"
 
@@ -142,13 +186,13 @@ module.exports = (robot) ->
 # - [x] urlをコメント付きでstockしてくれる(set)
 # - [x] urlをカテゴリ付きでstockしてくれる(set)
 # - [x] urlをコメント・カテゴリ付きでstockしてくれる(set)
-# - url stockにコメントを付けれる(update)
-# - url stockにカテゴリを付けれる(update)
-# - url stock情報を更新できる(update)
+# - [x] url stockにコメントを付けれる(update)
+# - [x] url stockにカテゴリを付けれる(update)
+# - [x] url stock情報を更新できる(update)
 # - [x] カテゴリ一覧を見れる(get)
 # - [x] 特定のurl情報を見れる(get)
 # - [x] 特定のカテゴリのurl一覧を見れる(get)
 # - [x] 全url一覧を見れる(get)
 # - [x] 特定のurl stockを削除(delete)
 # - [x] 特定のカテゴリのurlを削除(delete)
-# - 全url stockを削除(delete) 確認必須
+# - [x] 全url stockを削除(delete)
